@@ -9,7 +9,6 @@ def read_txt(txt_file):
 
 day4_input = read_txt("day4/day4_input.txt")
 
-
 # AUX FUNCTIONS -------------------------------------------
 
 def clean_day4_data(day4_input):
