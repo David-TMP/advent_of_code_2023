@@ -39,23 +39,6 @@ print("Day 6 Part 1 Run Time = ", str(elapsed_time))
 print("Day 6 Part 1 Solution = ", day6_part1_sol)
 
 
-# 1 2 3 4 5 6 7
-
-# (7-initial_number)*initial_number
-
-# 0 = 0
-# 1 = 6
-# 2 = 10
-# 3 = 12
-# 4 = 12
-# 5 = 10
-# 6 = 6
-# 7 = 0
-
-# 7 segundos
-# 9 metros
-
-
 # PART 2 -------------------------------------------
 
 def read_txt_part2(txt_file):
