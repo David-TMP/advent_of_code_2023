@@ -1,7 +1,5 @@
 # Libraries
-import numpy as np
 import timeit
-from numpy.polynomial.polynomial import Polynomial
 
 # Read Input Data
 def read_txt(txt_file):
