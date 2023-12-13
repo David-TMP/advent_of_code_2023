@@ -8,30 +8,19 @@ def read_txt(txt_file):
 
 day11_input = read_txt("day11/day11_input.txt")
 
-# numero = 1
-# new_input = []
 
-# for line in day11_input:
-#     new_line = ''
-#     for char in line:
-#         if char == '#':
-#             new_line += str(numero)
-#             numero += 1
-#         else:
-#             new_line += char
-#     new_input.append(new_line)
-
-
+# AUXILIARY FUNCTIONS
 
 # Create dictionary
-dict_test = dict()
-numero = 0
-
-for i in range(len(day11_input)):
-    for j in range(len(day11_input[0])):
-        if day11_input[i][j] == "#":
-            dict_test[numero] = (i, j)
-            numero += 1     
+def find_universe_position(grid):
+    uni_pos = dict()
+    numero = 0
+    for i in range(len(grid)):
+        for j in range(len(grid[0])):
+            if grid[i][j] == "#":
+                uni_pos[numero] = (i, j)
+                numero += 1
+    return uni_pos, numero
 
 # Expand universe
 def find_dot_only_rows_cols(grid):
@@ -68,27 +57,75 @@ def find_dot_only_rows_cols(grid):
 universe = find_dot_only_rows_cols(day11_input)
 
 
-# Calculate distance
-total_dist = 0
-for i in range((numero-1)):
-    for j in range(i+1, numero):
-        
-        row_dist = abs(dict_test[i][0]-dict_test[j][0])
-        col_dist = abs(dict_test[i][1]-dict_test[j][1])
+# PART 1 -------------------------------------------
 
-        if dict_test[i][0] >= dict_test[j][0]:
-            expand_rows = len([x for x in universe[0] if x in range(dict_test[j][0], dict_test[i][0])]) + 1000000 
+def day11_part1(uni_pos, uni_num, uni_empty):
 
-        elif dict_test[i][0] < dict_test[j][0]:
-            expand_rows = len([x for x in universe[0] if x in range(dict_test[i][0], dict_test[j][0])]) + 1000000 
+    total_dist = 0
+    for i in range((uni_num-1)):
+        for j in range(i+1, uni_num):
+            
+            row_dist = abs(uni_pos[i][0]-uni_pos[j][0])
+            col_dist = abs(uni_pos[i][1]-uni_pos[j][1])
 
-        if dict_test[i][1] >= dict_test[j][1]:
-            expand_cols = len([x for x in universe[1] if x in range(dict_test[j][1], dict_test[i][1])]) + 1000000 
+            if uni_pos[i][0] >= uni_pos[j][0]:
+                expand_rows = len([x for x in uni_empty[0] if x in range(uni_pos[j][0], uni_pos[i][0])]) 
 
-        elif dict_test[i][1] < dict_test[j][1]:
-            expand_cols = len([x for x in universe[1] if x in range(dict_test[i][1], dict_test[j][1])]) + 1000000 
+            elif uni_pos[i][0] < uni_pos[j][0]:
+                expand_rows = len([x for x in uni_empty[0] if x in range(uni_pos[i][0], uni_pos[j][0])])
 
-        path = row_dist+expand_rows + col_dist+expand_cols 
-        total_dist += path
+            if uni_pos[i][1] >= uni_pos[j][1]:
+                expand_cols = len([x for x in uni_empty[1] if x in range(uni_pos[j][1], uni_pos[i][1])])
 
-print(total_dist)
+            elif uni_pos[i][1] < uni_pos[j][1]:
+                expand_cols = len([x for x in uni_empty[1] if x in range(uni_pos[i][1], uni_pos[j][1])])
+
+            path = row_dist+expand_rows + col_dist+expand_cols 
+            total_dist += path
+
+    return total_dist
+
+start = timeit.default_timer()
+uni_pos, uni_num = find_universe_position(day11_input)
+uni_empty = find_dot_only_rows_cols(day11_input)
+day11_part1_sol = day11_part1(uni_pos, uni_num, uni_empty)
+elapsed_time = timeit.default_timer()-start
+print("Day 11 Part 1 Run Time = ", str(elapsed_time))
+print("Day 11 Part 1 Solution = ", day11_part1_sol)
+
+
+# PART 2 -------------------------------------------
+
+def day11_part2(uni_pos, uni_num, uni_empty):
+
+    total_dist = 0
+    for i in range((uni_num-1)):
+        for j in range(i+1, uni_num):
+            
+            row_dist = abs(uni_pos[i][0]-uni_pos[j][0])
+            col_dist = abs(uni_pos[i][1]-uni_pos[j][1])
+
+            if uni_pos[i][0] >= uni_pos[j][0]:
+                expand_rows = len([x for x in uni_empty[0] if x in range(uni_pos[j][0], uni_pos[i][0])]) * (1000000-1) 
+
+            elif uni_pos[i][0] < uni_pos[j][0]:
+                expand_rows = len([x for x in uni_empty[0] if x in range(uni_pos[i][0], uni_pos[j][0])]) * (1000000-1) 
+
+            if uni_pos[i][1] >= uni_pos[j][1]:
+                expand_cols = len([x for x in uni_empty[1] if x in range(uni_pos[j][1], uni_pos[i][1])]) * (1000000-1) 
+
+            elif uni_pos[i][1] < uni_pos[j][1]:
+                expand_cols = len([x for x in uni_empty[1] if x in range(uni_pos[i][1], uni_pos[j][1])]) * (1000000-1) 
+
+            path = row_dist+expand_rows + col_dist+expand_cols 
+            total_dist += path
+
+    return total_dist
+
+start = timeit.default_timer()
+uni_pos, uni_num = find_universe_position(day11_input)
+uni_empty = find_dot_only_rows_cols(day11_input)
+day11_part2_sol = day11_part2(uni_pos, uni_num, uni_empty)
+elapsed_time = timeit.default_timer()-start
+print("Day 11 Part 2 Run Time = ", str(elapsed_time))
+print("Day 11 Part 2 Solution = ", day11_part2_sol)
