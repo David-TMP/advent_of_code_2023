@@ -1,53 +1,39 @@
-def count_arrangements(springs, group_sizes):
-    def dp(index, group_index, broken_count):
-        # Base case: reached the end of the string and processed all groups
-        if index == len(springs) and group_index == len(group_sizes):
-            return 1 if broken_count == 0 else 0
-        if index == len(springs) or group_index == len(group_sizes):
-            return 0
+import sys
+import re
+from copy import deepcopy
+from math import gcd
+from collections import defaultdict, Counter, deque
+D = open("day13/day13_input.txt").read().strip()
+L = D.split('\n')
+G = [[c for c in row] for row in L]
 
-        # If already computed, return cached value
-        if (index, group_index, broken_count) in memo:
-            return memo[(index, group_index, broken_count)]
-
-        count = 0
-        current_group_size = group_sizes[group_index]
-
-        # Handling operational, broken, or unknown conditions
-        if springs[index] == '.' or springs[index] == '?':
-            # Operational: if current group is completed, move to next group
-            if broken_count == current_group_size:
-                count += dp(index + 1, group_index + 1, 0)
-            else:
-                count += dp(index + 1, group_index, broken_count)
-
-        if springs[index] == '#' or springs[index] == '?':
-            # Broken: if adding a broken spring doesn't exceed current group size
-            if broken_count < current_group_size:
-                count += dp(index + 1, group_index, broken_count + 1)
-
-        memo[(index, group_index, broken_count)] = count
-        return count
-
-    memo = {}
-    return dp(0, 0, 0)
-
-# Parse the input and apply the function to each row
-input_data = [
-    "???.### 1,1,3",
-    ".??..??...?##. 1,1,3",
-    "?#?#?#?#?#?#?#? 1,3,1,6",
-    "????.#...#... 4,1,1",
-    "????.######..#####. 1,6,5",
-    "?###???????? 3,2,1"
-]
-
-# Testing the modified function with the same input data
-total_arrangements = 0
-for row in input_data:
-    springs, sizes = row.split()
-    group_sizes = list(map(int, sizes.split(',')))
-    total_arrangements += count_arrangements(springs, group_sizes)
-
-print(total_arrangements)
-
+for part2 in [False, True]:
+  ans = 0
+  for grid in D.split('\n\n'):
+    G = [[c for c in row] for row in grid.split('\n')]
+    R = len(G)
+    C = len(G[0])
+    # vertical symmetry
+    for c in range(C-1):
+      badness = 0
+      for dc in range(C):
+        left = c-dc
+        right = c+1+dc
+        if 0<=left<right<C:
+          for r in range(R):
+            if G[r][left] != G[r][right]:
+              badness += 1
+      if badness == (1 if part2 else 0):
+        ans += c+1
+    for r in range(R-1):
+      badness = 0
+      for dr in range(R):
+        up = r-dr
+        down = r+1+dr
+        if 0<=up<down<R:
+          for c in range(C):
+            if G[up][c] != G[down][c]:
+              badness += 1
+      if badness == (1 if part2 else 0):
+        ans += 100*(r+1)
+  print(ans)
