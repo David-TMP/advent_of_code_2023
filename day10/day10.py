@@ -1,4 +1,3 @@
-# Libraries
 import timeit
 
 # Read Input Data
