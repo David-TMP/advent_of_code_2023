@@ -1,39 +1,92 @@
-import sys
-import re
-from copy import deepcopy
-from math import gcd
-from collections import defaultdict, Counter, deque
-D = open("day13/day13_input.txt").read().strip()
-L = D.split('\n')
-G = [[c for c in row] for row in L]
+def parse(filename):
+    with open(filename, 'r') as f:
+        lines = [x.strip() for x in f.readlines()]
+    
+    grids = [[]]
+    for line in lines:
+        if line == '':
+            grids.append([])
+            continue
+        
+        grids[-1].append(line)
+    
+    return grids
 
-for part2 in [False, True]:
-  ans = 0
-  for grid in D.split('\n\n'):
-    G = [[c for c in row] for row in grid.split('\n')]
-    R = len(G)
-    C = len(G[0])
-    # vertical symmetry
-    for c in range(C-1):
-      badness = 0
-      for dc in range(C):
-        left = c-dc
-        right = c+1+dc
-        if 0<=left<right<C:
-          for r in range(R):
-            if G[r][left] != G[r][right]:
-              badness += 1
-      if badness == (1 if part2 else 0):
-        ans += c+1
-    for r in range(R-1):
-      badness = 0
-      for dr in range(R):
-        up = r-dr
-        down = r+1+dr
-        if 0<=up<down<R:
-          for c in range(C):
-            if G[up][c] != G[down][c]:
-              badness += 1
-      if badness == (1 if part2 else 0):
-        ans += 100*(r+1)
-  print(ans)
+def transpose(grid):
+    return [*zip(*grid)]
+
+def convert_to_int(grid_line):
+    grid_line = ''.join(grid_line).replace('.', '0').replace('#', '1')
+    return int(grid_line, 2)
+
+def find_reflection(grid):
+    encoded_grid = [convert_to_int(line) for line in grid]
+
+    for i in range(1, len(grid)):
+        left = encoded_grid[:i][::-1]
+        right = encoded_grid[i:]
+
+        length = min(len(left), len(right))
+        left = left[:length]
+        right = right[:length]
+
+        if left == right:
+            return i
+
+    return -1
+
+def is_power_of_two(n):
+    return (n & (n-1) == 0) and n != 0  
+
+def find_smudge(grid):
+    encoded_grid = [convert_to_int(line) for line in grid]
+
+    for i in range(1, len(grid)):
+        left = encoded_grid[:i][::-1]
+        right = encoded_grid[i:]
+
+        length = min(len(left), len(right))
+        left = left[:length]
+        right = right[:length]
+
+        diff = [l ^ r for l, r in zip(left, right) if l != r]
+        if len(diff) == 1 and is_power_of_two(diff[0]):
+            return i
+
+    return -1
+
+
+def part1(grids):
+    s = 0
+
+    for grid in grids:
+        guess1 = find_reflection(grid) # rows
+        guess2 = find_reflection(transpose(grid)) # cols
+
+        if guess1 != -1:
+            s += guess1 * 100
+        
+        if guess2 != -1:
+            s += guess2
+        
+    return s
+
+def part2(grids):
+    s = 0
+
+    for grid in grids:
+        guess1 = find_smudge(grid) # rows
+        guess2 = find_smudge(transpose(grid)) # cols
+
+        if guess1 != -1:
+            s += guess1 * 100
+        
+        if guess2 != -1:
+            s += guess2
+        
+    return s
+
+if __name__ == '__main__':
+    grids = parse('day13/day13_input_test2.txt')
+    print(f"Part 1: {part1(grids)}")
+    print(f"Part 2: {part2(grids)}")
